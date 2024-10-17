@@ -1,9 +1,37 @@
+import { useState } from "react";
+import get from "lodash";
+
 import Label from "../../components/ui/Label";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import Link from "../../components/ui/Link";
+import Alert from "../../components/ui/Alert";
+import api from "../../api/client";
 
 const SigninPage = () => {
+  const [errors, setErrors] = useState([]);
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    const { email, password } = e.target.elements;
+
+    try {
+      setErrors([]);
+
+      const { data } = await api.post("/login", {
+        email: email.value,
+        password: password.value,
+      });
+
+      const jwt = get(data, "jwt", null);
+      if (jwt) {
+        localStorage.setItem("flavor_jwt", jwt);
+      }
+    } catch (error) {
+      setErrors(error?.response?.data?.errors || []);
+    }
+  };
+
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -18,7 +46,7 @@ const SigninPage = () => {
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form action="#" method="POST" className="space-y-6">
+        <form className="space-y-6" onSubmit={onSubmit}>
           <div className="space-y-2">
             <Label htmlFor="email">Email address</Label>
             <Input
@@ -43,9 +71,11 @@ const SigninPage = () => {
           <Button type="submit">Sign in</Button>
         </form>
 
-        <p className="mt-10 text-center text-sm text-gray-500">
+        <p className="mt-10 mb-5 text-center text-sm text-gray-500">
           Not a member? <Link to="/signup">Create an account</Link>
         </p>
+
+        <Alert errors={errors} setErrors={setErrors} />
       </div>
     </div>
   );
