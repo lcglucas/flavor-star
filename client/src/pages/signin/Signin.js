@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import get from "lodash";
 
 import Label from "../../components/ui/Label";
@@ -9,6 +10,8 @@ import Alert from "../../components/ui/Alert";
 import api from "../../api/client";
 
 const SigninPage = () => {
+  const navigate = useNavigate();
+
   const [errors, setErrors] = useState([]);
 
   const onSubmit = async (e) => {
@@ -26,6 +29,7 @@ const SigninPage = () => {
       const jwt = get(data, "jwt", null);
       if (jwt) {
         localStorage.setItem("flavor_jwt", jwt);
+        navigate("/");
       }
     } catch (error) {
       setErrors(error?.response?.data?.errors || []);
@@ -72,7 +76,7 @@ const SigninPage = () => {
         </form>
 
         <p className="mt-10 mb-5 text-center text-sm text-gray-500">
-          Not a member? <Link to="/signup">Create an account</Link>
+          Not a member? <Link to="/signup">Signup</Link>
         </p>
 
         <Alert errors={errors} setErrors={setErrors} />

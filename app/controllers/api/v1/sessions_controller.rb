@@ -1,5 +1,3 @@
-require "jwt"
-
 class Api::V1::SessionsController < ApplicationController
   def create
     user = User.find_by(email: params[:email])
@@ -10,11 +8,5 @@ class Api::V1::SessionsController < ApplicationController
     else
       render json: { errors: [ "Invalid email or password" ] }, status: :unauthorized
     end
-  end
-
-  private
-
-  def encode_token(payload)
-    JWT.encode(payload, nil, "none")
   end
 end
