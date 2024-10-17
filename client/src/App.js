@@ -2,6 +2,7 @@ import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 
 import SigninPage from "./pages/signin/Signin";
 import SignupPage from "./pages/signup/Signup";
+import RestaurantList from "./pages/restaurants/RestaurantList";
 
 function App() {
   return (
@@ -10,10 +11,10 @@ function App() {
         <Route path="/signin" element={<SigninPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route
-          path="/protected"
+          path="/"
           element={
             <RequireAuth>
-              <ProtectedPage />
+              <RestaurantList />
             </RequireAuth>
           }
         />
@@ -25,7 +26,7 @@ function App() {
 export default App;
 
 function RequireAuth({ children }) {
-  let auth = false;
+  let auth = true;
   let location = useLocation();
 
   if (!auth) {
@@ -33,8 +34,4 @@ function RequireAuth({ children }) {
   }
 
   return children;
-}
-
-function ProtectedPage() {
-  return <h3>Protected</h3>;
 }
