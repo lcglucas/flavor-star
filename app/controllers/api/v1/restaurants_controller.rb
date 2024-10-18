@@ -2,9 +2,12 @@ class Api::V1::RestaurantsController < ApplicationController
   before_action :check_role, only: [ :create ]
 
   def index
-    restaurants = Restaurant.includes(:user).all
+    if current_user&.owner?
+      restaurants = Restaurant.where(user: current_user).includes(:user)
+    else
+      restaurants = Restaurant.includes(:user).all
+    end
 
-    # restaurants.map! { |restaurant| {restaurant: restaurant, owner: restaurant.user} }
     render json: restaurants.as_json(include: { owner: { only: [ :id, :full_name, :email ] } })
   end
 

@@ -121,16 +121,19 @@ const Header = () => {
                 <div className="px-4 py-2 text-sm border-b">
                   <UserName expanded />
                 </div>
-                {profileOptions.map((item) => (
-                  <MenuItem key={item.name}>
-                    <button
-                      onClick={item.action}
-                      className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 w-full text-left"
-                    >
-                      {item.name}
-                    </button>
-                  </MenuItem>
-                ))}
+                {profileOptions.map(
+                  (item) =>
+                    item.active && (
+                      <MenuItem key={item.name}>
+                        <button
+                          onClick={item.action}
+                          className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 w-full text-left"
+                        >
+                          {item.name}
+                        </button>
+                      </MenuItem>
+                    )
+                )}
               </MenuItems>
             </Menu>
           </div>
@@ -181,16 +184,19 @@ const Header = () => {
             </div>
           </div>
           <div className="mt-3 space-y-1">
-            {profileOptions.map((item) => (
-              <DisclosureButton
-                key={item.name}
-                as="button"
-                onClick={item.action}
-                className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800 w-full text-left"
-              >
-                {item.name}
-              </DisclosureButton>
-            ))}
+            {profileOptions.map(
+              (item) =>
+                item.active && (
+                  <DisclosureButton
+                    key={item.name}
+                    as="button"
+                    onClick={item.action}
+                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800 w-full text-left"
+                  >
+                    {item.name}
+                  </DisclosureButton>
+                )
+            )}
           </div>
         </div>
       </DisclosurePanel>
