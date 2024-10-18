@@ -6,9 +6,10 @@ class User < ApplicationRecord
                     length: { maximum: 105 },
                     format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :full_name, presence: true,
-                        length: { minimum: 5, maximum: 105 }
+                    length: { minimum: 5, maximum: 105 }
   has_many :restaurants
-
+  has_many :reviews
+  has_many :reviewed_restaurants, through: :reviews, source: :restaurant
   # Bcrypt
   has_secure_password
 end

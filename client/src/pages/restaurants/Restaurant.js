@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 
 import Layout from "../../components/ui/Layout";
 import StarIcon from "../../assets/icons/Star";
 import FeedbackModal from "../../components/modal/FeedbackModal";
+import Button from "../../components/ui/Button";
+import FeedbackCard from "../../components/restaurant/FeedbackCard";
 import api from "../../api/client";
 
 const Restaurant = () => {
@@ -11,23 +13,23 @@ const Restaurant = () => {
   const [restaurant, setRestaurant] = useState(null);
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    const getRestaurantList = async () => {
-      try {
-        const token = localStorage.getItem("jwt");
+  const getRestaurant = useCallback(async () => {
+    try {
+      const token = localStorage.getItem("jwt");
 
-        const { data } = await api.get(`/restaurants/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+      const { data } = await api.get(`/restaurants/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-        setRestaurant(data?.restaurant);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    getRestaurantList();
+      setRestaurant(data);
+    } catch (error) {
+      console.error(error);
+    }
   }, [id]);
+
+  useEffect(() => {
+    getRestaurant();
+  }, [getRestaurant]);
 
   if (!restaurant) {
     return <div>Loading...</div>;
@@ -38,9 +40,14 @@ const Restaurant = () => {
       <section className="relative bg-white p-6 rounded-lg shadow">
         <div className="w-full max-w-7xl px-4 md:px-5 lg-6 mx-auto">
           <div className="w-full">
-            <h2 className="font-bold text-3xl text-black mb-8 text-center">
-              {restaurant?.name} reviews
-            </h2>
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="font-bold text-3xl text-black">
+                {restaurant?.name}
+              </h2>
+              <Button onClick={() => setOpen(true)} className="w-auto">
+                Leave a review
+              </Button>
+            </div>
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-11 pb-11 border-b border-gray-100 max-xl:max-w-2xl max-xl:mx-auto">
               <div className="box flex flex-col gap-y-4 w-full ">
                 <div className="flex items-center w-full">
@@ -96,41 +103,25 @@ const Restaurant = () => {
                   <StarIcon className={"h-12 w-12"} />
                 </div>
                 <p className="font-medium text-xl leading-8 text-gray-900 text-center">
-                  46 Ratings
+                  {restaurant?.reviews?.length === 0
+                    ? "0 Ratings"
+                    : restaurant?.reviews?.length === 1
+                      ? "0 Ratings"
+                      : `${restaurant?.reviews?.length} Ratings`}
                 </p>
               </div>
             </div>
-
-            <div className="pt-11 pb-8 border-b border-gray-100 max-xl:max-w-2xl max-xl:mx-auto">
-              <div className="flex items-center gap-3 mb-4">
-                <StarIcon className={"h-7 w-7"} />
-                <StarIcon className={"h-7 w-7"} />
-                <StarIcon className={"h-7 w-7"} />
-                <StarIcon className={"h-7 w-7"} />
-                <StarIcon className={"h-7 w-7"} />
-              </div>
-              <h3 className="font-semibold text-xl sm:text-2xl leading-9 text-black mb-6">
-                Outstanding Experience!!!
-              </h3>
-              <div className="flex sm:items-center flex-col min-[400px]:flex-row justify-between gap-5 mb-4">
-                <h6 className="font-semibold text-lg leading-8 text-indigo-600 ">
-                  John Watson
-                </h6>
-                <p className="font-normal text-lg leading-8 text-gray-400">
-                  Nov 01, 2023
-                </p>
-              </div>
-              <p className="font-normal text-lg leading-8 text-gray-400 max-xl:text-justify">
-                One of the standout features of Pagedone is its intuitive and
-                user-friendly interface. Navigating through the system feels
-                natural, and the layout makes it easy to locate and utilize
-                various design elements. This is particularly beneficial for
-                designers looking to streamline their workflow.
-              </p>
-            </div>
+            {restaurant?.reviews?.map((review) => (
+              <FeedbackCard key={review?.id} review={review} />
+            ))}
           </div>
         </div>
       </section>
+      <FeedbackModal
+        open={open}
+        setOpen={setOpen}
+        getRestaurant={getRestaurant}
+      />
     </Layout>
   );
 };

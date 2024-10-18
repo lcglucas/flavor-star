@@ -1,20 +1,17 @@
 class Api::V1::ReviewsController < ApplicationController
   def create
     review = Review.new(review_params)
-    puts "#########"
-    puts review
-    puts "#########"
-    # if user.save
-    #   token = encode_token(user_id: user.id)
-    #   render json: { jwt: token, user: user }, status: :created
-    # else
-    #   render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
-    # end
+    review.user = current_user
+    if review.save
+      render json: { success: "Your review was added successfully!" }, status: :ok
+    else
+      render json: { errors: review.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 
   private
 
   def review_params
-    params.permit(:rating, :visit_date, :comment)
+    params.require(:review).permit(:rating, :visit_date, :title, :comment, :restaurant_id)
   end
 end

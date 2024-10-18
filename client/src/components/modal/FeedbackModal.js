@@ -1,5 +1,7 @@
 import ReactStars from "react-rating-stars-component";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { format } from "date-fns";
 import {
   Dialog,
   DialogBackdrop,
@@ -10,16 +12,28 @@ import {
 import Button from "../ui/Button";
 import ButtonSecondary from "../ui/ButtonSecondary";
 import Label from "../ui/Label";
+import Input from "../ui/Input";
 import TextArea from "../ui/TextArea";
 import DatePicker from "../ui/DatePicker";
 import Alert from "../ui/Alert";
 import api from "../../api/client";
 
-export default function FeedbackModal({ open, setOpen }) {
+export default function FeedbackModal({ open, setOpen, getRestaurant }) {
+  const { id } = useParams();
   const [starValue, setStarValue] = useState(0);
   const [visitDate, setVisitDate] = useState(new Date());
+  const [title, setTitle] = useState("");
   const [comment, setComment] = useState("");
   const [errors, setErrors] = useState([]);
+  const [disabled, setDisabled] = useState(false);
+
+  useEffect(() => {
+    if (!starValue || !title || !visitDate || !comment) {
+      setDisabled(true);
+    } else {
+      setDisabled(false);
+    }
+  }, [starValue, title, visitDate, comment]);
 
   const onSubmit = async () => {
     try {
@@ -28,16 +42,19 @@ export default function FeedbackModal({ open, setOpen }) {
       const token = localStorage.getItem("jwt");
 
       const payload = {
+        restaurant_id: id,
         rating: starValue,
-        visit_date: visitDate,
+        visit_date: format(visitDate, "yyyy-MM-dd"),
+        title,
         comment,
       };
 
-      await api.post("/reviews", payload, {
+      const { data } = await api.post("/reviews", payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
+      console.log(data);
       onCancel();
+      getRestaurant();
     } catch (error) {
       setErrors(error?.response?.data?.errors || []);
     }
@@ -45,6 +62,9 @@ export default function FeedbackModal({ open, setOpen }) {
 
   const onCancel = () => {
     setStarValue(0);
+    setTitle("");
+    setComment("");
+    setVisitDate("");
     setOpen(false);
   };
 
@@ -71,13 +91,23 @@ export default function FeedbackModal({ open, setOpen }) {
                 </DialogTitle>
                 <div className="mt-2 mx-auto w-fit">
                   <ReactStars
-                    size={30}
+                    size={50}
                     count={5}
                     value={starValue}
                     onChange={setStarValue}
                   />
                 </div>
-                <div className="space-y-2 text-left mt-4">
+                <div className="text-left mt-4">
+                  <Label htmlFor="title">Title</Label>
+                  <Input
+                    id="title"
+                    name="title"
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                  />
+                </div>
+                <div className="text-left mt-4">
                   <Label htmlFor="comment">Leave a comment</Label>
                   <TextArea
                     id="comment"
@@ -88,7 +118,7 @@ export default function FeedbackModal({ open, setOpen }) {
                     rows={4}
                   />
                 </div>
-                <div className="space-y-2 text-left mt-4 relative">
+                <div className="text-left mt-4 relative">
                   <DatePicker
                     date={visitDate}
                     setDate={setVisitDate}
@@ -97,10 +127,13 @@ export default function FeedbackModal({ open, setOpen }) {
                 </div>
               </div>
             </div>
-            <div className="mt-5 sm:mt-6 flex flex-col sm:flex-row gap-3">
+            <div className="mt-5 sm:mt-6 flex flex-col sm:flex-row gap-3 mb-4">
               <ButtonSecondary onClick={onCancel}>Cancel</ButtonSecondary>
-              <Button onClick={onSubmit}>Send</Button>
+              <Button onClick={onSubmit} disabled={disabled}>
+                Send
+              </Button>
             </div>
+            <Alert errors={errors} setErrors={setErrors} />
           </DialogPanel>
         </div>
       </div>

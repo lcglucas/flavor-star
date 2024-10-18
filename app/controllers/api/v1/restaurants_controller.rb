@@ -24,7 +24,12 @@ class Api::V1::RestaurantsController < ApplicationController
   def show
     restaurant = Restaurant.find(params[:id])
     if restaurant
-      render json: { restaurant: restaurant }, status: :ok
+      render json: restaurant.as_json(
+        include: {
+          owner: { only: [  :id, :full_name, :email ] },
+          reviews: { only: [ :id, :rating, :title, :comment, :visit_date ], include: { user: { only: [ :full_name ] } } }
+        }
+      ), status: :ok
     else
       render json: { errors: "Restaurant not found" }, status: :not_found
     end
