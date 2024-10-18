@@ -10,7 +10,11 @@ const RestaurantList = () => {
   useEffect(() => {
     const getRestaurantList = async () => {
       try {
-        const { data } = await api.get("/restaurants");
+        const token = localStorage.getItem("jwt");
+
+        const { data } = await api.get("/restaurants", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setList(data);
       } catch (error) {
         console.error(error);
