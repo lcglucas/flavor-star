@@ -4,11 +4,17 @@ import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import SigninPage from "./pages/signin/Signin";
 import SignupPage from "./pages/signup/Signup";
 import RestaurantList from "./pages/restaurants/RestaurantList";
+import CreateRestaurant from "./pages/restaurants/CreateRestaurant";
 import Header from "./components/layout/Header";
 import { UserContext } from "./context/UserContext";
+import { USER_OWNER } from "./utils/const";
 
 function App() {
-  const { isAuthenticated } = useContext(UserContext);
+  const { isAuthenticated, isAuthLoading } = useContext(UserContext);
+
+  if (isAuthLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
@@ -25,6 +31,16 @@ function App() {
               </RequireAuth>
             }
           />
+          <Route
+            path="/new-restaurant"
+            element={
+              <RequireAuth>
+                <CheckRole>
+                  <CreateRestaurant />
+                </CheckRole>
+              </RequireAuth>
+            }
+          />
         </Route>
       </Routes>
     </>
@@ -34,11 +50,24 @@ function App() {
 export default App;
 
 function RequireAuth({ children }) {
-  let auth = true;
+  const { isAuthenticated } = useContext(UserContext);
+
   let location = useLocation();
 
-  if (!auth) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+  if (!isAuthenticated) {
+    return <Navigate to="/signin" state={{ from: location }} replace />;
+  }
+
+  return children;
+}
+
+function CheckRole({ children }) {
+  const { user } = useContext(UserContext);
+
+  let location = useLocation();
+
+  if (user?.role !== USER_OWNER) {
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
 
   return children;

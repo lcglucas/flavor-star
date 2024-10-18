@@ -6,6 +6,7 @@ export const UserContext = createContext();
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -15,6 +16,8 @@ export function UserProvider({ children }) {
       setUser(storedUser);
       setIsAuthenticated(true);
     }
+
+    setIsAuthLoading(false);
   }, []);
 
   const login = (userData, jwt) => {
@@ -34,7 +37,9 @@ export function UserProvider({ children }) {
   };
 
   return (
-    <UserContext.Provider value={{ user, isAuthenticated, login, logout }}>
+    <UserContext.Provider
+      value={{ user, isAuthenticated, isAuthLoading, login, logout }}
+    >
       {children}
     </UserContext.Provider>
   );

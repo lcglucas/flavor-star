@@ -14,9 +14,10 @@ import {
 import Logo from "../../assets/logo.png";
 import { UserContext } from "../../context/UserContext";
 import { classNames } from "../../utils/classNames";
+import { USER_OWNER } from "../../utils/const";
 
 const navigation = [
-  { name: "Restaurants", href: "#", current: true },
+  { name: "Restaurants", href: "/", current: true },
   { name: "Owners", href: "#", current: false },
 ];
 
@@ -26,8 +27,13 @@ const Header = () => {
   const { user, logout } = useContext(UserContext);
 
   const profileOptions = [
-    { name: "Your Profile", href: "#", action: () => null },
-    { name: "Sign out", href: "#", action: () => onLogout() },
+    { name: "Your Profile", action: () => null, active: true },
+    {
+      name: "New Restaurant",
+      action: () => navigate("/new-restaurant"),
+      active: user?.role === USER_OWNER,
+    },
+    { name: "Sign out", action: () => onLogout(), active: true },
   ];
 
   const onLogout = () => {

@@ -26,7 +26,7 @@ const RestaurantList = () => {
 
   return (
     <Layout>
-      <div className="flex justify-center items-start">
+      <div className="grid items-center justify-center gap-6">
         {list.map((restaurant) => (
           <RestaurantCard key={restaurant.id} restaurant={restaurant} />
         ))}
