@@ -21,6 +21,15 @@ class Api::V1::RestaurantsController < ApplicationController
     end
   end
 
+  def show
+    restaurant = Restaurant.find(params[:id])
+    if restaurant
+      render json: { restaurant: restaurant }, status: :ok
+    else
+      render json: { errors: "Restaurant not found" }, status: :not_found
+    end
+  end
+
   private
 
   def restaurant_params

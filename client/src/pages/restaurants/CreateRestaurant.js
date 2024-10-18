@@ -49,7 +49,7 @@ const CreateRestaurant = () => {
             <Input id="name" name="name" type="text" required />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="name">Description</Label>
+            <Label htmlFor="description">Description</Label>
             <TextArea
               id="description"
               name="description"

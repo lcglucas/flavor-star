@@ -5,6 +5,7 @@ import SigninPage from "./pages/signin/Signin";
 import SignupPage from "./pages/signup/Signup";
 import RestaurantList from "./pages/restaurants/RestaurantList";
 import CreateRestaurant from "./pages/restaurants/CreateRestaurant";
+import Restaurant from "./pages/restaurants/Restaurant";
 import Header from "./components/layout/Header";
 import { UserContext } from "./context/UserContext";
 import { USER_OWNER } from "./utils/const";
@@ -28,6 +29,14 @@ function App() {
             element={
               <RequireAuth>
                 <RestaurantList />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/restaurants/:id"
+            element={
+              <RequireAuth>
+                <Restaurant />
               </RequireAuth>
             }
           />
