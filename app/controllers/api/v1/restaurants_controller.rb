@@ -5,7 +5,10 @@ class Api::V1::RestaurantsController < ApplicationController
     if current_user&.owner?
       restaurants = Restaurant.where(user: current_user).includes(:user)
     else
-      restaurants = Restaurant.includes(:user).all
+      restaurants = Restaurant.left_joins(:reviews)
+                              .group("restaurants.id")
+                              .select("restaurants.*, COALESCE(AVG(reviews.rating), 0) AS average_rating")
+                              .order("average_rating DESC")
     end
 
     render json: restaurants.as_json(include: { owner: { only: [ :id, :full_name, :email ] } }, methods: [ :average, :reviews_count ])
