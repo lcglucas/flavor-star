@@ -8,7 +8,7 @@ class Api::V1::RestaurantsController < ApplicationController
       restaurants = Restaurant.includes(:user).all
     end
 
-    render json: restaurants.as_json(include: { owner: { only: [ :id, :full_name, :email ] } })
+    render json: restaurants.as_json(include: { owner: { only: [ :id, :full_name, :email ] } }, methods: [ :average, :reviews_count ])
   end
 
   def create
@@ -28,7 +28,8 @@ class Api::V1::RestaurantsController < ApplicationController
         include: {
           owner: { only: [  :id, :full_name, :email ] },
           reviews: { only: [ :id, :rating, :title, :comment, :visit_date ], include: { user: { only: [ :full_name ] } } }
-        }
+        },
+        methods: [ :average ]
       ), status: :ok
     else
       render json: { errors: "Restaurant not found" }, status: :not_found

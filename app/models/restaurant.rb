@@ -8,4 +8,12 @@ class Restaurant < ApplicationRecord
   def owner
     user
   end
+
+  def average
+    reviews.where.not(rating: nil).average(:rating).to_i
+  end
+
+  def reviews_count
+    reviews.count
+  end
 end
