@@ -1,5 +1,5 @@
 import ReactStars from "react-rating-stars-component";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useContext } from "react";
 import { useParams } from "react-router-dom";
 
 import Layout from "../../components/ui/Layout";
@@ -7,8 +7,11 @@ import FeedbackModal from "../../components/modal/FeedbackModal";
 import Button from "../../components/ui/Button";
 import FeedbackCard from "../../components/restaurant/FeedbackCard";
 import api from "../../api/client";
+import { UserContext } from "../../context/UserContext";
+import { USER_OWNER } from "../../utils/const";
 
 const Restaurant = () => {
+  const { user } = useContext(UserContext);
   const { id } = useParams();
   const [restaurant, setRestaurant] = useState(null);
   const [open, setOpen] = useState(false);
@@ -44,9 +47,11 @@ const Restaurant = () => {
               <h2 className="font-bold text-3xl text-black">
                 {restaurant?.name}
               </h2>
-              <Button onClick={() => setOpen(true)} className="w-auto">
-                Leave a review
-              </Button>
+              {user?.role !== USER_OWNER && (
+                <Button onClick={() => setOpen(true)} className="w-auto">
+                  Leave a review
+                </Button>
+              )}
             </div>
             <div className="p-8 bg-amber-50 rounded-3xl flex items-center justify-center flex-col">
               <h2 className="font-bold text-5xl text-amber-400">
@@ -69,7 +74,12 @@ const Restaurant = () => {
               </p>
             </div>
             {restaurant?.reviews?.map((review) => (
-              <FeedbackCard key={review?.id} review={review} />
+              <FeedbackCard
+                owner={restaurant?.owner}
+                key={review?.id}
+                review={review}
+                getRestaurant={getRestaurant}
+              />
             ))}
           </div>
         </div>

@@ -1,0 +1,5 @@
+class AddReplyToReview < ActiveRecord::Migration[7.2]
+  def change
+    add_column :reviews, :reply, :string
+  end
+end

@@ -30,7 +30,7 @@ class Api::V1::RestaurantsController < ApplicationController
       render json: restaurant.as_json(
         include: {
           owner: { only: [  :id, :full_name, :email ] },
-          reviews: { only: [ :id, :rating, :title, :comment, :visit_date ], include: { user: { only: [ :full_name ] } } }
+          reviews: { only: [ :id, :rating, :title, :comment, :visit_date, :reply ], include: { user: { only: [ :full_name ] } } }
         },
         methods: [ :average ]
       ), status: :ok

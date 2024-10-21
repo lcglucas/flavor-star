@@ -6,6 +6,8 @@ Rails.application.routes.draw do
       resources :users
       resources :restaurants
       resources :reviews
+
+      patch "restaurants/:id/reviews/:id_review", to: "reviews#update"
     end
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
