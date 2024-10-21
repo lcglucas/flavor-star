@@ -19,6 +19,8 @@ const Restaurant = () => {
 
   const getRestaurant = useCallback(async () => {
     try {
+      setRestaurant(null);
+
       const token = localStorage.getItem("jwt");
 
       const { data } = await api.get(`/restaurants/${id}`, {

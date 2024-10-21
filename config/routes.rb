@@ -8,6 +8,7 @@ Rails.application.routes.draw do
       resources :reviews
 
       patch "restaurants/:id/reviews/:id_review", to: "reviews#update"
+      delete "reviews/:id_review/reply", to: "reviews#destroy_reply"
     end
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

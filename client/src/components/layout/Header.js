@@ -16,10 +16,7 @@ import { UserContext } from "../../context/UserContext";
 import { classNames } from "../../utils/classNames";
 import { USER_OWNER } from "../../utils/const";
 
-const navigation = [
-  { name: "Restaurants", href: "/", current: true },
-  { name: "Owners", href: "#", current: false },
-];
+const navigation = [{ name: "Restaurants", href: "/", current: true }];
 
 const Header = () => {
   const navigate = useNavigate();

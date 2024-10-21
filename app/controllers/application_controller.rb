@@ -36,4 +36,8 @@ class ApplicationController < ActionController::API
       end
     end
   end
+
+  def check_admin
+    render json: { errors: [ "Only an admin can perform this action" ] }, status: :unauthorized unless current_user.admin?
+  end
 end

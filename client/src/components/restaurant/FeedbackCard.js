@@ -1,14 +1,31 @@
 import ReactStars from "react-rating-stars-component";
 import { useState, useContext } from "react";
-import { ArrowUturnDownIcon } from "@heroicons/react/20/solid";
+import { ArrowUturnDownIcon, TrashIcon } from "@heroicons/react/20/solid";
 import { format } from "date-fns";
 
 import ReplyModal from "../modal/ReplyModal";
+import AlertModal from "../modal/AlertModal";
 import { UserContext } from "../../context/UserContext";
+import { USER_ADMIN } from "../../utils/const";
+import api from "../../api/client";
 
 const FeedbackCard = ({ owner, review, getRestaurant }) => {
   const { user } = useContext(UserContext);
   const [open, setOpen] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
+
+  const onSubmit = async () => {
+    try {
+      const token = localStorage.getItem("jwt");
+
+      await api.delete(`/reviews/${review?.id}/reply`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      getRestaurant();
+      setAlertOpen(false);
+    } catch (error) {}
+  };
 
   return (
     <>
@@ -27,11 +44,19 @@ const FeedbackCard = ({ owner, review, getRestaurant }) => {
         <h3 className="font-semibold text-lg mb-1">{review?.title}</h3>
         <p className="font-normal text-gray-400">{review?.comment}</p>
         {review?.reply ? (
-          <div className="mt-5 flex gap-3">
+          <div className="mt-5 gap-3">
             <p className="text-gray-400 flex gap-3">
               <ArrowUturnDownIcon className="w-4 h-4 -rotate-90 text-black mt-0.5" />{" "}
               {review?.reply}
             </p>
+            {user?.role === USER_ADMIN && (
+              <button
+                className="mt-2 text-red-600"
+                onClick={() => setAlertOpen(true)}
+              >
+                <TrashIcon className="w-4 h-4 hover:scale-110 transition-all" />
+              </button>
+            )}
           </div>
         ) : owner?.id === user?.id ? (
           <button
@@ -47,6 +72,15 @@ const FeedbackCard = ({ owner, review, getRestaurant }) => {
         setOpen={setOpen}
         getRestaurant={getRestaurant}
         idReview={review.id}
+      />
+      <AlertModal
+        open={alertOpen}
+        setOpen={setAlertOpen}
+        title={"Delete reply"}
+        description={
+          "Are you sure you want to delete this reply? This action cannot be undone."
+        }
+        onSubmit={onSubmit}
       />
     </>
   );
