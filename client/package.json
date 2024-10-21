@@ -23,7 +23,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "PORT=3001 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -51,5 +51,6 @@
     "@tailwindcss/forms": "^0.5.9",
     "ajv": "^7.2.4",
     "tailwindcss": "^3.4.14"
-  }
+  },
+  "proxy": "http://localhost:3000"
 }
