@@ -9,6 +9,7 @@ import FeedbackCard from "../../components/restaurant/FeedbackCard";
 import api from "../../api/client";
 import { UserContext } from "../../context/UserContext";
 import { USER_OWNER } from "../../utils/const";
+import LoadingOverlay from "../../components/ui/LoadingOverlay";
 
 const Restaurant = () => {
   const { user } = useContext(UserContext);
@@ -35,7 +36,7 @@ const Restaurant = () => {
   }, [getRestaurant]);
 
   if (!restaurant) {
-    return <div>Loading...</div>;
+    return <LoadingOverlay />;
   }
 
   return (

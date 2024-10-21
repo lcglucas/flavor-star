@@ -9,12 +9,13 @@ import Restaurant from "./pages/restaurants/Restaurant";
 import Header from "./components/layout/Header";
 import { UserContext } from "./context/UserContext";
 import { USER_OWNER } from "./utils/const";
+import LoadingOverlay from "./components/ui/LoadingOverlay";
 
 function App() {
   const { isAuthenticated, isAuthLoading } = useContext(UserContext);
 
   if (isAuthLoading) {
-    return <div>Loading...</div>;
+    return <LoadingOverlay />;
   }
 
   return (
