@@ -6,9 +6,11 @@ import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import Link from "../../components/ui/Link";
 import Alert from "../../components/ui/Alert";
+import Checkbox from "../../components/ui/Checkbox";
 import api from "../../api/client";
 import Logo from "../../assets/logo.png";
 import { UserContext } from "../../context/UserContext";
+import { USER_OWNER, USER_REGULAR } from "../../utils/const";
 
 const SignupPage = () => {
   const navigate = useNavigate();
@@ -18,7 +20,7 @@ const SignupPage = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const { full_name, email, password } = e.target.elements;
+    const { full_name, email, password, role } = e.target.elements;
 
     try {
       setErrors([]);
@@ -27,6 +29,7 @@ const SignupPage = () => {
         full_name: full_name.value,
         email: email.value,
         password: password.value,
+        role: role.checked ? USER_OWNER : USER_REGULAR,
       });
 
       if (data?.jwt) {
@@ -72,6 +75,10 @@ const SignupPage = () => {
               required
               autoComplete="new-password"
             />
+          </div>
+          <div className="space-y-2 flex items-center gap-2">
+            <Checkbox id="role" name="role" />
+            <Label htmlFor="role">I'm a restaurant owner</Label>
           </div>
 
           <Button type="submit">Sign up</Button>
