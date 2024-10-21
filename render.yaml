@@ -1,18 +1,18 @@
 databases:
-  - name: flavor-star
-    databaseName: flavor-star
-    user: flavor-star
+  - name: flavorStart
+    databaseName: flavorStart
+    user: flavorStart
 
 services:
   - type: web
-    name: flavor-star
+    name: flavorStart
     env: ruby
     buildCommand: "./bin/render-build.sh"
     startCommand: "bundle exec puma -C config/puma.rb"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: flavor-star
+          name: flavorStart
           property: connectionString
       - key: RAILS_MASTER_KEY
         sync: false
