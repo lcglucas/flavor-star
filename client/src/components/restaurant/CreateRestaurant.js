@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
@@ -9,15 +9,25 @@ import Button from "../ui/Button";
 import Alert from "../ui/Alert";
 import api from "../../api/client";
 
-const CreateRestaurantForm = () => {
+const CreateRestaurantForm = ({ restaurant, onClose }) => {
   const navigate = useNavigate();
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm();
 
   const [apiErrors, setApiErrors] = useState([]);
+  const [isUpdate, setIsUpdate] = useState([]);
+
+  useEffect(() => {
+    if (restaurant) {
+      setIsUpdate(true);
+      setValue("name", restaurant?.name);
+      setValue("description", restaurant?.description);
+    }
+  }, [restaurant, setValue]);
 
   const onSubmit = async (data) => {
     try {
@@ -25,11 +35,19 @@ const CreateRestaurantForm = () => {
 
       const token = localStorage.getItem("jwt");
 
-      await api.post("/restaurants", data, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const url = isUpdate ? `/restaurants/${restaurant?.id}` : "/restaurants";
 
-      navigate("/");
+      if (isUpdate) {
+        await api.patch(url, data, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else {
+        await api.post(url, data, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+
+      isUpdate ? onClose() : navigate("/");
     } catch (error) {
       setApiErrors(error?.response?.data?.errors || []);
     }

@@ -7,15 +7,17 @@ import FeedbackModal from "../../components/modal/FeedbackModal";
 import Button from "../../components/ui/Button";
 import FeedbackCard from "../../components/restaurant/FeedbackCard";
 import api from "../../api/client";
-import { UserContext } from "../../context/UserContext";
-import { USER_REGULAR } from "../../utils/const";
 import LoadingOverlay from "../../components/ui/LoadingOverlay";
+import UpdateRestaurantModal from "../../components/modal/UpdateRestaurantModal";
+import { UserContext } from "../../context/UserContext";
+import { USER_REGULAR, USER_ADMIN } from "../../utils/const";
 
 const Restaurant = () => {
   const { user } = useContext(UserContext);
   const { id } = useParams();
   const [restaurant, setRestaurant] = useState(null);
   const [open, setOpen] = useState(false);
+  const [update, setUpdate] = useState(false);
 
   const getRestaurant = useCallback(async () => {
     try {
@@ -55,6 +57,22 @@ const Restaurant = () => {
                   Leave a review
                 </Button>
               )}
+              {user?.role === USER_ADMIN && (
+                <div className="flex gap-3 items-center mt-2">
+                  <button
+                    onClick={() => setUpdate(true)}
+                    className="rounded bg-indigo-50 px-2 py-1 text-xs font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100"
+                  >
+                    Edit restaurant
+                  </button>
+                  <button
+                    onClick={() => setUpdate(true)}
+                    className="rounded bg-red-50 px-2 py-1 text-xs font-semibold text-red-600 shadow-sm hover:bg-red-100"
+                  >
+                    Delete restaurant
+                  </button>
+                </div>
+              )}
             </div>
             <div className="p-8 bg-amber-50 rounded-3xl flex items-center justify-center flex-col">
               <h2 className="font-bold text-5xl text-amber-400">
@@ -90,6 +108,12 @@ const Restaurant = () => {
       <FeedbackModal
         open={open}
         setOpen={setOpen}
+        getRestaurant={getRestaurant}
+      />
+      <UpdateRestaurantModal
+        open={update}
+        setOpen={setUpdate}
+        restaurant={restaurant}
         getRestaurant={getRestaurant}
       />
     </Layout>
