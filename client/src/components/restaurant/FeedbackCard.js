@@ -1,6 +1,6 @@
 import ReactStars from "react-rating-stars-component";
 import { useState, useContext } from "react";
-import { ArrowUturnDownIcon, TrashIcon } from "@heroicons/react/20/solid";
+import { ArrowUturnDownIcon } from "@heroicons/react/20/solid";
 import { format } from "date-fns";
 
 import ReplyModal from "../modal/ReplyModal";
@@ -13,6 +13,7 @@ const FeedbackCard = ({ owner, review, getRestaurant }) => {
   const { user } = useContext(UserContext);
   const [open, setOpen] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
+  const [update, setUpdate] = useState(false);
 
   const onSubmit = async () => {
     try {
@@ -25,6 +26,16 @@ const FeedbackCard = ({ owner, review, getRestaurant }) => {
       getRestaurant();
       setAlertOpen(false);
     } catch (error) {}
+  };
+
+  const onOpenReply = () => {
+    setOpen(true);
+    setUpdate(false);
+  };
+
+  const onUpdateReply = () => {
+    setOpen(true);
+    setUpdate(true);
   };
 
   return (
@@ -50,17 +61,25 @@ const FeedbackCard = ({ owner, review, getRestaurant }) => {
               {review?.reply}
             </p>
             {user?.role === USER_ADMIN && (
-              <button
-                className="mt-2 text-red-600"
-                onClick={() => setAlertOpen(true)}
-              >
-                <TrashIcon className="w-4 h-4 hover:scale-110 transition-all" />
-              </button>
+              <div className="flex gap-3 items-center mt-2">
+                <button
+                  onClick={onUpdateReply}
+                  className="rounded bg-indigo-50 px-2 py-1 text-xs font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100"
+                >
+                  Edit reply
+                </button>
+                <button
+                  onClick={() => setAlertOpen(true)}
+                  className="rounded bg-red-50 px-2 py-1 text-xs font-semibold text-red-600 shadow-sm hover:bg-red-100"
+                >
+                  Delete this reply
+                </button>
+              </div>
             )}
           </div>
         ) : owner?.id === user?.id ? (
           <button
-            onClick={() => setOpen(true)}
+            onClick={onOpenReply}
             className="rounded bg-indigo-50 px-2 py-1 text-xs font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100 mt-5"
           >
             Reply this review
@@ -72,6 +91,9 @@ const FeedbackCard = ({ owner, review, getRestaurant }) => {
         setOpen={setOpen}
         getRestaurant={getRestaurant}
         idReview={review.id}
+        reply={review.reply}
+        update={update}
+        setUpdate={setUpdate}
       />
       <AlertModal
         open={alertOpen}

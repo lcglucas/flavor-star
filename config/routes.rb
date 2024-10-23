@@ -9,6 +9,7 @@ Rails.application.routes.draw do
 
       patch "restaurants/:id/reviews/:id_review", to: "reviews#update"
       delete "reviews/:id_review/reply", to: "reviews#destroy_reply"
+      patch "reviews/:id_review/reply", to: "reviews#update_reply"
     end
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

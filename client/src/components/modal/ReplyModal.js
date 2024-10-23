@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 
@@ -12,13 +12,20 @@ import api from "../../api/client";
 export default function ReplyModal({
   open,
   setOpen,
-  idRestaurant,
   idReview,
   getRestaurant,
+  reply,
+  update,
+  setUpdate,
 }) {
   const { id } = useParams();
 
+  const [replyValue, setReplyValue] = useState(reply || "");
   const [errors, setErrors] = useState([]);
+
+  useEffect(() => {
+    setReplyValue(reply || "");
+  }, [reply]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -29,8 +36,12 @@ export default function ReplyModal({
 
       const token = localStorage.getItem("jwt");
 
+      const url = update
+        ? `/reviews/${idReview}/reply`
+        : `/restaurants/${id}/reviews/${idReview}`;
+
       await api.patch(
-        `restaurants/${id}/reviews/${idReview}`,
+        url,
         { reply: reply.value },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -38,6 +49,7 @@ export default function ReplyModal({
       );
       onCancel();
       getRestaurant();
+      setUpdate(false);
     } catch (error) {
       setErrors(error?.response?.data?.errors || []);
     }
@@ -69,6 +81,8 @@ export default function ReplyModal({
                   type="text"
                   rows={4}
                   required
+                  value={replyValue}
+                  onChange={(e) => setReplyValue(e.target.value)}
                 />
               </div>
 
