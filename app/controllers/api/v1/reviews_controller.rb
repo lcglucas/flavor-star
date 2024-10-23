@@ -1,8 +1,8 @@
 class Api::V1::ReviewsController < ApplicationController
   before_action :check_role, only: [ :create ]
   before_action :check_owner, only: [ :update ]
-  before_action :check_admin, only: [ :destroy_reply, :update_reply ]
-  before_action :set_review, only: [ :update, :destroy_reply, :update_reply ]
+  before_action :check_admin, only: [ :destroy, :destroy_reply, :update_reply, :update_review ]
+  before_action :set_review, only: [ :update, :destroy, :destroy_reply, :update_reply, :update_review ]
 
   def create
     review = Review.new(review_params)
@@ -22,6 +22,14 @@ class Api::V1::ReviewsController < ApplicationController
     end
   end
 
+  def destroy
+    if @review.destroy
+      render json: { success: "This review was deleted successfully!" }, status: :ok
+    else
+      render json: { errors: review.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
   def destroy_reply
     if @review.update(reply: "")
       render json: { success: "This repply was deleted successfully!" }, status: :ok
@@ -33,6 +41,14 @@ class Api::V1::ReviewsController < ApplicationController
   def update_reply
     if @review.update(reply_params)
       render json: { success: "Reply was updated successfully!" }, status: :ok
+    else
+      render json: { errors: review.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+  def update_review
+    if @review.update(review_params)
+      render json: { success: "Review was updated successfully!" }, status: :ok
     else
       render json: { errors: review.errors.full_messages }, status: :unprocessable_entity
     end

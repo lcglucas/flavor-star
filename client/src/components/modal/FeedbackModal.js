@@ -18,7 +18,12 @@ import DatePicker from "../ui/DatePicker";
 import Alert from "../ui/Alert";
 import api from "../../api/client";
 
-export default function FeedbackModal({ open, setOpen, getRestaurant }) {
+export default function FeedbackModal({
+  open,
+  setOpen,
+  getRestaurant,
+  review,
+}) {
   const { id } = useParams();
   const [starValue, setStarValue] = useState(0);
   const [visitDate, setVisitDate] = useState(new Date());
@@ -26,6 +31,17 @@ export default function FeedbackModal({ open, setOpen, getRestaurant }) {
   const [comment, setComment] = useState("");
   const [errors, setErrors] = useState([]);
   const [disabled, setDisabled] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
+
+  useEffect(() => {
+    if (review) {
+      setStarValue(review?.rating);
+      setTitle(review?.title);
+      setComment(review?.comment);
+      setVisitDate(new Date(review?.visit_date));
+      setIsUpdate(true);
+    }
+  }, [review]);
 
   useEffect(() => {
     if (!starValue || !title || !visitDate || !comment) {
@@ -49,10 +65,16 @@ export default function FeedbackModal({ open, setOpen, getRestaurant }) {
         comment,
       };
 
-      const { data } = await api.post("/reviews", payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      console.log(data);
+      if (isUpdate) {
+        await api.put(`/reviews/${review?.id}`, payload, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else {
+        await api.post("/reviews", payload, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+
       onCancel();
       getRestaurant();
     } catch (error) {

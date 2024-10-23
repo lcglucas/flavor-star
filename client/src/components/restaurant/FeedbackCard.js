@@ -5,42 +5,66 @@ import { format } from "date-fns";
 
 import ReplyModal from "../modal/ReplyModal";
 import AlertModal from "../modal/AlertModal";
+import FeedbackModal from "../modal/FeedbackModal";
+import api from "../../api/client";
 import { UserContext } from "../../context/UserContext";
 import { USER_ADMIN } from "../../utils/const";
-import api from "../../api/client";
 
 const FeedbackCard = ({ owner, review, getRestaurant }) => {
   const { user } = useContext(UserContext);
   const [open, setOpen] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const [update, setUpdate] = useState(false);
+  const [deleteReview, setDeleteReview] = useState(false);
+  const [updateReview, setUpdateReview] = useState(false);
 
   const onSubmit = async () => {
     try {
       const token = localStorage.getItem("jwt");
 
-      await api.delete(`/reviews/${review?.id}/reply`, {
+      const url = deleteReview
+        ? `/reviews/${review?.id}`
+        : `/reviews/${review?.id}/reply`;
+
+      await api.delete(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       getRestaurant();
       setAlertOpen(false);
+      setDeleteReview(false);
     } catch (error) {}
   };
 
-  const onOpenReply = () => {
-    setOpen(true);
-    setUpdate(false);
+  const onOpenDelete = (isDeleteReview = false) => {
+    setAlertOpen(true);
+    setDeleteReview(isDeleteReview);
   };
 
-  const onUpdateReply = () => {
+  const onOpenReply = (isUpdateReply = false) => {
     setOpen(true);
-    setUpdate(true);
+    setUpdate(isUpdateReply);
   };
 
   return (
     <>
       <div className="py-6 border-b border-gray-100">
+        {user?.role === USER_ADMIN && (
+          <div className="flex gap-3 items-center mt-2">
+            <button
+              onClick={() => setUpdateReview(true)}
+              className="rounded bg-indigo-50 px-2 py-1 text-xs font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100"
+            >
+              Edit review
+            </button>
+            <button
+              onClick={() => onOpenDelete(true)}
+              className="rounded bg-red-50 px-2 py-1 text-xs font-semibold text-red-600 shadow-sm hover:bg-red-100"
+            >
+              Delete review
+            </button>
+          </div>
+        )}
         <div className="flex items-center gap-3">
           <ReactStars size={35} count={5} value={review?.rating} edit={false} />
         </div>
@@ -61,15 +85,15 @@ const FeedbackCard = ({ owner, review, getRestaurant }) => {
               {review?.reply}
             </p>
             {user?.role === USER_ADMIN && (
-              <div className="flex gap-3 items-center mt-2">
+              <div className="flex gap-3 items-center mt-2 ml-7">
                 <button
-                  onClick={onUpdateReply}
+                  onClick={() => onOpenReply(true)}
                   className="rounded bg-indigo-50 px-2 py-1 text-xs font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100"
                 >
                   Edit reply
                 </button>
                 <button
-                  onClick={() => setAlertOpen(true)}
+                  onClick={() => onOpenDelete()}
                   className="rounded bg-red-50 px-2 py-1 text-xs font-semibold text-red-600 shadow-sm hover:bg-red-100"
                 >
                   Delete this reply
@@ -79,7 +103,7 @@ const FeedbackCard = ({ owner, review, getRestaurant }) => {
           </div>
         ) : owner?.id === user?.id ? (
           <button
-            onClick={onOpenReply}
+            onClick={() => onOpenReply()}
             className="rounded bg-indigo-50 px-2 py-1 text-xs font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100 mt-5"
           >
             Reply this review
@@ -103,6 +127,12 @@ const FeedbackCard = ({ owner, review, getRestaurant }) => {
           "Are you sure you want to delete this reply? This action cannot be undone."
         }
         onSubmit={onSubmit}
+      />
+      <FeedbackModal
+        open={updateReview}
+        setOpen={setUpdateReview}
+        getRestaurant={getRestaurant}
+        review={review}
       />
     </>
   );

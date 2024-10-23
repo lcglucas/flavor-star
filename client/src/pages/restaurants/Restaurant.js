@@ -8,7 +8,7 @@ import Button from "../../components/ui/Button";
 import FeedbackCard from "../../components/restaurant/FeedbackCard";
 import api from "../../api/client";
 import { UserContext } from "../../context/UserContext";
-import { USER_OWNER } from "../../utils/const";
+import { USER_REGULAR } from "../../utils/const";
 import LoadingOverlay from "../../components/ui/LoadingOverlay";
 
 const Restaurant = () => {
@@ -50,7 +50,7 @@ const Restaurant = () => {
               <h2 className="font-bold text-3xl text-black">
                 {restaurant?.name}
               </h2>
-              {user?.role !== USER_OWNER && (
+              {user?.role === USER_REGULAR && (
                 <Button onClick={() => setOpen(true)} className="w-auto">
                   Leave a review
                 </Button>
