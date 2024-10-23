@@ -1,5 +1,7 @@
 class Api::V1::RestaurantsController < ApplicationController
   before_action :check_role, only: [ :create ]
+  before_action :check_admin, only: [ :update, :destroy ]
+  before_action :set_restaurant, only: [ :update, :destroy ]
 
   def index
     if current_user&.owner?
@@ -39,6 +41,22 @@ class Api::V1::RestaurantsController < ApplicationController
     end
   end
 
+  def update
+    if @restaurant.update(restaurant_params)
+      render json: { success: "Restaurant was updated successfully!" }, status: :ok
+    else
+      render json: { errors: review.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    if @restaurant.destroy
+      render json: { success: "Restaurant was deleted successfully!" }, status: :ok
+    else
+      render json: { errors: review.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def restaurant_params
@@ -49,5 +67,9 @@ class Api::V1::RestaurantsController < ApplicationController
     unless current_user&.owner?
       render json: { errors: [ "You are not authorized to perform this action" ] }, status: :forbidden
     end
+  end
+
+  def set_restaurant
+    @restaurant = Restaurant.find(params[:id])
   end
 end
