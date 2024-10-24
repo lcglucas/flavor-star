@@ -76,7 +76,7 @@ const SignupPage = () => {
               autoComplete="new-password"
             />
           </div>
-          <div className="space-y-2 flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <Checkbox id="role" name="role" />
             <Label htmlFor="role">I'm a restaurant owner</Label>
           </div>

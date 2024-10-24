@@ -32,7 +32,7 @@ const Header = () => {
   ];
 
   const profileOptions = [
-    { name: "Your Profile", action: () => null, active: true },
+    // { name: "Your Profile", action: () => null, active: true },
     {
       name: "New Restaurant",
       action: () => navigate("/new-restaurant"),

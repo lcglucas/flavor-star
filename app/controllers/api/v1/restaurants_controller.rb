@@ -4,17 +4,23 @@ class Api::V1::RestaurantsController < ApplicationController
   before_action :set_restaurant, only: [ :update, :destroy ]
 
   def index
-    if current_user&.owner?
-      restaurants = Restaurant.where(user: current_user).includes(:user)
-    else
-      restaurants = Restaurant.left_joins(:reviews)
-                              .group("restaurants.id")
-                              .select("restaurants.*, COALESCE(AVG(reviews.rating), 0) AS average_rating")
-                              .order("average_rating DESC")
-    end
+    rating = params[:rating]
 
-    render json: restaurants.as_json(include: { owner: { only: [ :id, :full_name, :email ] } }, methods: [ :average, :reviews_count ])
+    restaurants = Restaurant.left_joins(:reviews)
+                            .group("restaurants.id")
+                            .select("restaurants.*, COALESCE(AVG(reviews.rating), 0) AS average_rating")
+                            .order("average_rating DESC")
+
+    restaurants = restaurants.having("COALESCE(AVG(reviews.rating), 0) = ?", rating.to_f) if rating
+
+    restaurants = restaurants.where(user: current_user) if current_user&.owner?
+
+    render json: restaurants.as_json(
+      include: { owner: { only: [ :id, :full_name, :email ] } },
+      methods: [ :average, :reviews_count ]
+    )
   end
+
 
   def create
     restaurant = Restaurant.new(restaurant_params)
