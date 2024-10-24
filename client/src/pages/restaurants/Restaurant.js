@@ -1,6 +1,6 @@
 import ReactStars from "react-rating-stars-component";
 import { useEffect, useState, useCallback, useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import Layout from "../../components/ui/Layout";
 import FeedbackModal from "../../components/modal/FeedbackModal";
@@ -9,15 +9,19 @@ import FeedbackCard from "../../components/restaurant/FeedbackCard";
 import api from "../../api/client";
 import LoadingOverlay from "../../components/ui/LoadingOverlay";
 import UpdateRestaurantModal from "../../components/modal/UpdateRestaurantModal";
+import AlertModal from "../../components/modal/AlertModal";
 import { UserContext } from "../../context/UserContext";
 import { USER_REGULAR, USER_ADMIN } from "../../utils/const";
 
 const Restaurant = () => {
+  const navigate = useNavigate();
+
   const { user } = useContext(UserContext);
   const { id } = useParams();
   const [restaurant, setRestaurant] = useState(null);
   const [open, setOpen] = useState(false);
   const [update, setUpdate] = useState(false);
+  const [deletAlert, setDeleteAlert] = useState(false);
 
   const getRestaurant = useCallback(async () => {
     try {
@@ -38,6 +42,20 @@ const Restaurant = () => {
   useEffect(() => {
     getRestaurant();
   }, [getRestaurant]);
+
+  const onDelete = async () => {
+    try {
+      const token = localStorage.getItem("jwt");
+
+      await api.delete(`/restaurants/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   if (!restaurant) {
     return <LoadingOverlay />;
@@ -66,7 +84,7 @@ const Restaurant = () => {
                     Edit restaurant
                   </button>
                   <button
-                    onClick={() => setUpdate(true)}
+                    onClick={() => setDeleteAlert(true)}
                     className="rounded bg-red-50 px-2 py-1 text-xs font-semibold text-red-600 shadow-sm hover:bg-red-100"
                   >
                     Delete restaurant
@@ -115,6 +133,15 @@ const Restaurant = () => {
         setOpen={setUpdate}
         restaurant={restaurant}
         getRestaurant={getRestaurant}
+      />
+      <AlertModal
+        open={deletAlert}
+        setOpen={setDeleteAlert}
+        title={"Delete restaurant?"}
+        description={
+          "Are you sure you want to delete this restaurant? This action cannot be undone."
+        }
+        onSubmit={onDelete}
       />
     </Layout>
   );
