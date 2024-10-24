@@ -19,7 +19,7 @@ const CreateRestaurantForm = ({ restaurant, onClose }) => {
   } = useForm();
 
   const [apiErrors, setApiErrors] = useState([]);
-  const [isUpdate, setIsUpdate] = useState([]);
+  const [isUpdate, setIsUpdate] = useState(false);
 
   useEffect(() => {
     if (restaurant) {

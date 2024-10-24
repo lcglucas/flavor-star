@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, NavLink, useLocation } from "react-router-dom";
 import {
   Disclosure,
   DisclosureButton,
@@ -18,12 +18,17 @@ import { USER_OWNER } from "../../utils/const";
 
 const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { user, logout } = useContext(UserContext);
 
   const navigation = [
-    { name: "Restaurants", href: "/", current: true },
-    { name: "Avaliações pendentes", href: "/pending-reviews", current: false },
+    { name: "Restaurants", href: "/", active: true },
+    {
+      name: "Avaliações pendentes",
+      href: "/pending-reviews",
+      active: user?.role === USER_OWNER,
+    },
   ];
 
   const profileOptions = [
@@ -88,21 +93,25 @@ const Header = () => {
               />
             </div>
             <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
-              {navigation.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  aria-current={item.current ? "page" : undefined}
-                  className={classNames(
-                    item.current
-                      ? "border-indigo-500 text-gray-900"
-                      : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700",
-                    "inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium"
-                  )}
-                >
-                  {item.name}
-                </a>
-              ))}
+              {navigation.map(
+                (item) =>
+                  item.active && (
+                    <NavLink
+                      key={item.name}
+                      to={item.href}
+                      className={({ isActive }) =>
+                        classNames(
+                          isActive
+                            ? "border-indigo-500 text-gray-900"
+                            : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700",
+                          "inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium"
+                        )
+                      }
+                    >
+                      {item.name}
+                    </NavLink>
+                  )
+              )}
             </div>
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
@@ -157,22 +166,24 @@ const Header = () => {
 
       <DisclosurePanel className="sm:hidden">
         <div className="space-y-1 pb-3 pt-2">
-          {navigation.map((item) => (
-            <DisclosureButton
-              key={item.name}
-              as="a"
-              href={item.href}
-              aria-current={item.current ? "page" : undefined}
-              className={classNames(
-                item.current
-                  ? "border-indigo-500 bg-indigo-50 text-indigo-700"
-                  : "border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800",
-                "block border-l-4 py-2 pl-3 pr-4 text-base font-medium"
-              )}
-            >
-              {item.name}
-            </DisclosureButton>
-          ))}
+          {navigation.map(
+            (item) =>
+              item.active && (
+                <DisclosureButton
+                  key={item.name}
+                  as="a"
+                  href={item.href}
+                  className={classNames(
+                    location.pathname === item.href
+                      ? "border-indigo-500 bg-indigo-50 text-indigo-700"
+                      : "border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800",
+                    "block border-l-4 py-2 pl-3 pr-4 text-base font-medium"
+                  )}
+                >
+                  {item.name}
+                </DisclosureButton>
+              )
+          )}
         </div>
         <div className="border-t border-gray-200 pb-3 pt-4">
           <div className="flex items-center px-4">
