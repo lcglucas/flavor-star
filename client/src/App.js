@@ -7,6 +7,7 @@ import RestaurantList from "./pages/restaurants/RestaurantList";
 import CreateRestaurant from "./pages/restaurants/CreateRestaurant";
 import Restaurant from "./pages/restaurants/Restaurant";
 import Header from "./components/layout/Header";
+import PendingReviews from "./pages/pending-reviews/PendingReviews";
 import { UserContext } from "./context/UserContext";
 import { USER_OWNER } from "./utils/const";
 import LoadingOverlay from "./components/ui/LoadingOverlay";
@@ -47,6 +48,16 @@ function App() {
               <RequireAuth>
                 <CheckRole>
                   <CreateRestaurant />
+                </CheckRole>
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/pending-reviews"
+            element={
+              <RequireAuth>
+                <CheckRole>
+                  <PendingReviews />
                 </CheckRole>
               </RequireAuth>
             }

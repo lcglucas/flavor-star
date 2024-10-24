@@ -1,8 +1,19 @@
 class Api::V1::ReviewsController < ApplicationController
-  before_action :check_role, only: [ :create ]
-  before_action :check_owner, only: [ :update ]
+  before_action :check_regular_user, only: [ :create ]
+  before_action :check_restaurant_owner, only: [ :update ]
   before_action :check_admin, only: [ :destroy, :destroy_reply, :update_reply, :update_review ]
   before_action :set_review, only: [ :update, :destroy, :destroy_reply, :update_reply, :update_review ]
+
+  def index
+    reviews = Review.joins(:restaurant)
+                    .where(restaurants: { user_id: current_user.id })
+                    .where(reply: [ nil, "" ])
+    if reviews
+      render json: { reviews: reviews }, status: :ok
+    else
+      render json: { errors: reviews.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
 
   def create
     review = Review.new(review_params)
@@ -56,23 +67,23 @@ class Api::V1::ReviewsController < ApplicationController
 
   private
 
-  def check_role
+  def check_regular_user
     if current_user.owner?
       render json: { errors: [ "Only regular users are allowed to review a restaurant" ] }, status: :forbidden
     end
   end
 
-
-  def review_params
-    params.require(:review).permit(:rating, :visit_date, :title, :comment, :restaurant_id)
-  end
-
-  def check_owner
+  def check_restaurant_owner
     restaurant = Restaurant.find(params[:id])
     if restaurant.owner != current_user
       render json: { errors: [ "Only the owner is allowed to reply this review" ] }, status: :forbidden
     end
   end
+
+  def review_params
+    params.require(:review).permit(:rating, :visit_date, :title, :comment, :restaurant_id)
+  end
+
 
   def reply_params
     params.require(:review).permit(:reply)

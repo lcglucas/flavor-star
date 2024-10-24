@@ -115,6 +115,7 @@ const FeedbackCard = ({ owner, review, getRestaurant }) => {
         setOpen={setOpen}
         getRestaurant={getRestaurant}
         idReview={review.id}
+        idRestaurant={review.restaurant_id}
         reply={review.reply}
         update={update}
         setUpdate={setUpdate}

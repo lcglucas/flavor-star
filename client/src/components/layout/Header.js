@@ -16,12 +16,15 @@ import { UserContext } from "../../context/UserContext";
 import { classNames } from "../../utils/classNames";
 import { USER_OWNER } from "../../utils/const";
 
-const navigation = [{ name: "Restaurants", href: "/", current: true }];
-
 const Header = () => {
   const navigate = useNavigate();
 
   const { user, logout } = useContext(UserContext);
+
+  const navigation = [
+    { name: "Restaurants", href: "/", current: true },
+    { name: "Avaliações pendentes", href: "/pending-reviews", current: false },
+  ];
 
   const profileOptions = [
     { name: "Your Profile", action: () => null, active: true },

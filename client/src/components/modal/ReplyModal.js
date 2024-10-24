@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 
 import Button from "../ui/Button";
@@ -17,9 +16,8 @@ export default function ReplyModal({
   reply,
   update,
   setUpdate,
+  idRestaurant,
 }) {
-  const { id } = useParams();
-
   const [replyValue, setReplyValue] = useState(reply || "");
   const [errors, setErrors] = useState([]);
 
@@ -38,7 +36,7 @@ export default function ReplyModal({
 
       const url = update
         ? `/reviews/${idReview}/reply`
-        : `/restaurants/${id}/reviews/${idReview}`;
+        : `/restaurants/${idRestaurant}/reviews/${idReview}`;
 
       await api.patch(
         url,
