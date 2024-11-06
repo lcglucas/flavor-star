@@ -6,7 +6,7 @@ This project was built with Ruby on Rails for the backend and React for the fron
 
 In the project directory, you can run:
 
-### `./bin/dev`
+### `rails s`
 
 After that, navigate to the client directory:
 
