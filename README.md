@@ -1,24 +1,21 @@
-# README
+# Welcome to the Flavor Star App
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This project was built with Ruby on Rails for the backend and React for the frontend. The primary objective was to develop a robust, easily maintainable backend alongside a responsive and dynamic frontend based on the Single Page Application (SPA) architecture.
 
-Things you may want to cover:
+## Project Setup
 
-* Ruby version
+In the project directory, you can run:
 
-* System dependencies
+### `./bin/dev`
 
-* Configuration
+After that, navigate to the client directory:
 
-* Database creation
+### `cd client`
 
-* Database initialization
+Then run the following command to install frontend dependencies:
 
-* How to run the test suite
+### `npm install`
 
-* Services (job queues, cache servers, search engines, etc.)
+Finally, start the frontend by running:
 
-* Deployment instructions
-
-* ...
+### `npm start`
